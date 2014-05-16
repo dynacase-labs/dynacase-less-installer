@@ -20,3 +20,5 @@ You can use the parser in sty files, with rules like that :
     )
  );
  ```
+ 
+The parser used is : https://github.com/oyejorge/less.php
