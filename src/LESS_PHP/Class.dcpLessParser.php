@@ -41,6 +41,9 @@ class dcpLessParser implements ICssParser
             throw new Exception("STY0005", "$fullTargetDirname dir could not be created for file $destFile");
         }
         $parser = new \Less_Parser($this->_options);
+        if (isset($this->_styleConfig["sty_const"]["less_var"])) {
+            $parser->ModifyVars($this->_styleConfig["sty_const"]["less_var"]);
+        }
         foreach($this->_srcFiles as $srcPath) {
             $srcFullPath = $pubDir . DIRECTORY_SEPARATOR . $srcPath;
             $parser->parseFile($srcFullPath);
