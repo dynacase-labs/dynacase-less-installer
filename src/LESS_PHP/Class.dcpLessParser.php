@@ -24,6 +24,8 @@ class dcpLessParser implements ICssParser
             );
         }
         $this->_options = $options;
+        $this->_options['cache_dir'] = getTmpDir();
+        $this->_options['cache_method'] = 'serialize';
         $this->_styleConfig = $styleConfig;
     }
 
