@@ -6,7 +6,7 @@
     <parameters>
         <param name="less" label="Twitter less download URL" type="text"
                volatile="yes" onupgrade="W"
-               default="ftp://ftp.anakeen.com/third-party/less.php_1.7.0.1.zip"/>
+               default="ftp://ftp.anakeen.com/third-party/less.php_1.7.0.3.zip"/>
     </parameters>
 
     <post-install>
