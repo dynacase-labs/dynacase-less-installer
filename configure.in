@@ -1,1 +1,14 @@
+
+AC_INIT(dynacase-less-installer)
+
+AC_SUBST(PACKAGE)
 PACKAGE=dynacase-less-installer
+AC_SUBST(VERSION)
+VERSION=`cat VERSION`
+AC_SUBST(RELEASE)
+RELEASE=`cat RELEASE`
+
+AC_SUBST(PUBRULE)
+AC_ARG_WITH(pubrule, [  --with-pubrule=dir      Path to PubRule], PUBRULE=$withval)
+
+AC_OUTPUT(Makefile info.xml)
