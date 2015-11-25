@@ -1,5 +1,6 @@
 
-AC_INIT(dynacase-less-installer)
+AC_PREREQ(2.13)
+AC_INIT(./Makefile.in)
 
 AC_SUBST(PACKAGE)
 PACKAGE=dynacase-less-installer
