@@ -1,14 +1,17 @@
 <?php
+/*
+ * @author Anakeen
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
+ * @package FDL
+*/
 
 namespace Dcp\Style;
-
 
 class dcpLessParser implements ICssParser
 {
     protected $_srcFiles = null;
     protected $_styleConfig = array();
     protected $_options = array();
-
     /**
      * @param string|string[] $srcFiles path or array of path of source file(s) relative to server root
      * @param array $options array of options
@@ -28,7 +31,6 @@ class dcpLessParser implements ICssParser
         $this->_options['cache_method'] = 'serialize';
         $this->_styleConfig = $styleConfig;
     }
-
     /**
      * @param string $destFile destination file path relative to server root (if null, parsed result is returned)
      * @throws Exception
@@ -36,8 +38,7 @@ class dcpLessParser implements ICssParser
      */
     public function gen($destFile = null)
     {
-        $pubDir = \ApplicationParameterManager::getScopedParameterValue("CORE_PUBDIR", DEFAULT_PUBDIR);
-        $fullTargetPath = $pubDir . DIRECTORY_SEPARATOR . $destFile;
+        $fullTargetPath = DEFAULT_PUBDIR . DIRECTORY_SEPARATOR . $destFile;
         $fullTargetDirname = dirname($fullTargetPath);
         if (!is_dir($fullTargetDirname) && (false === mkdir($fullTargetDirname, 0777, true))) {
             throw new Exception("STY0005", "$fullTargetDirname dir could not be created for file $destFile");
@@ -46,13 +47,13 @@ class dcpLessParser implements ICssParser
         if (isset($this->_styleConfig["sty_const"]["less_var"])) {
             $parser->ModifyVars($this->_styleConfig["sty_const"]["less_var"]);
         }
-        foreach($this->_srcFiles as $srcPath) {
-            $srcFullPath = $pubDir . DIRECTORY_SEPARATOR . $srcPath;
+        foreach ($this->_srcFiles as $srcPath) {
+            $srcFullPath = DEFAULT_PUBDIR . DIRECTORY_SEPARATOR . $srcPath;
             $parser->parseFile($srcFullPath);
         }
         $css = $parser->getCss();
         if (false === file_put_contents($fullTargetPath, $css)) {
-                throw new Exception("STY0005", "$fullTargetPath could not be written for file $destFile");
+            throw new Exception("STY0005", "$fullTargetPath could not be written for file $destFile");
         }
     }
 }
