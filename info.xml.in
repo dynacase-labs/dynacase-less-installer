@@ -6,7 +6,7 @@
     <parameters>
         <param name="less" label="Twitter less download URL" type="text"
                volatile="yes" onupgrade="W"
-               default="http://ftp.dynacase.org/third-party/less.php_1.7.0.3.zip"/>
+               default="http://ftp.dynacase.org/third-party/less.php_1.7.0.10.zip"/>
     </parameters>
 
     <post-install>
