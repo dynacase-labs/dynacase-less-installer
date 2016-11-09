@@ -6,12 +6,13 @@
 
 namespace Dcp\Style;
 
+require_once 'lib/less.php/Cache.php';
+
 class dcpLessParser implements ICssParser
 {
     protected $_srcFiles = null;
     protected $_styleConfig = array();
     protected $_options = array();
-
     /**
      * @param string|string[] $srcFiles    path or array of path of source file(s) relative to server root
      * @param array           $options     array of options
@@ -32,66 +33,48 @@ class dcpLessParser implements ICssParser
         $this->_options['sourceMapBasepath'] = DEFAULT_PUBDIR;
         $this->_styleConfig = $styleConfig;
     }
-
     /**
      * @param string $destFile destination file path relative to server root (if null, parsed result is returned)
      *
-     * @throws Exception
-     * @return mixed
+     * @return void
+     * @throws \Exception
      */
     public function gen($destFile = null)
     {
-        $disableAutoload = false;
+        $fullTargetPath = DEFAULT_PUBDIR . DIRECTORY_SEPARATOR . $destFile;
+        $fullTargetDirname = dirname($fullTargetPath);
+        if (!is_dir($fullTargetDirname) && (false === mkdir($fullTargetDirname, 0777, true))) {
+            throw new Exception("STY0005", "$fullTargetDirname dir could not be created for file $destFile");
+        }
+        
+        $autoloadFuncs = spl_autoload_functions();
+        foreach ($autoloadFuncs as $unregisterFunc) {
+            spl_autoload_unregister($unregisterFunc);
+        }
+        
+        $exception = null;
         try {
-            $fullTargetPath = DEFAULT_PUBDIR . DIRECTORY_SEPARATOR . $destFile;
-            $fullTargetDirname = dirname($fullTargetPath);
-            if (!is_dir($fullTargetDirname)
-                && (false === mkdir(
-                        $fullTargetDirname, 0777, true
-                    ))
-            ) {
-                throw new Exception(
-                    "STY0005",
-                    "$fullTargetDirname dir could not be created for file $destFile"
-                );
-            }
-            $parser = new \Less_Parser($this->_options);
-            $autoloadFuncs = spl_autoload_functions();
-
-            foreach ($autoloadFuncs as $unregisterFunc) {
-                spl_autoload_unregister($unregisterFunc);
-            }
-            $disableAutoload = true;
-            if (isset($this->_styleConfig["sty_const"]["less_var"])) {
-                $parser->ModifyVars(
-                    $this->_styleConfig["sty_const"]["less_var"]
-                );
-            }
+            $less_files = array();
             foreach ($this->_srcFiles as $srcPath) {
                 $srcFullPath = DEFAULT_PUBDIR . DIRECTORY_SEPARATOR . $srcPath;
-                $parser->parseFile($srcFullPath);
+                $less_files[$srcFullPath] = '';
             }
-            $css = $parser->getCss();
+            $css_file_name = \Less_Cache::Get($less_files, $this->_options, isset($this->_styleConfig["sty_const"]["less_var"]) ? $this->_styleConfig["sty_const"]["less_var"] : array());
+            $css = file_get_contents($this->_options['cache_dir'] . DIRECTORY_SEPARATOR . $css_file_name);
             if (false === file_put_contents($fullTargetPath, $css)) {
-                throw new Exception(
-                    "STY0005",
-                    "$fullTargetPath could not be written for file $destFile"
-                );
+                throw new Exception("STY0005", "$fullTargetPath could not be written for file $destFile");
             }
-            if ($disableAutoload) {
-                foreach ($autoloadFuncs as $registerFunc) {
-                    spl_autoload_register($registerFunc);
-                }
-                $disableAutoload = false;
-            }
-        } catch (Exception $e) {
-            if ($disableAutoload) {
-                foreach ($autoloadFuncs as $registerFunc) {
-                    spl_autoload_register($registerFunc);
-                }
-            }
-            throw $e;
         }
-
+        catch(\Exception $e) {
+            $exception = $e;
+        }
+        
+        foreach ($autoloadFuncs as $registerFunc) {
+            spl_autoload_register($registerFunc);
+        }
+        
+        if ($exception !== null) {
+            throw $exception;
+        }
     }
 }
