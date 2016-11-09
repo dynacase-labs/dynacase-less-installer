@@ -27,8 +27,12 @@ class dcpLessParser implements ICssParser
                 $srcFiles
             );
         }
+        $cacheDir = DEFAULT_PUBDIR . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'less';
+        if (!is_dir($cacheDir)) {
+            mkdir($cacheDir, 0775, true);
+        }
         $this->_options = $options;
-        $this->_options['cache_dir'] = getTmpDir();
+        $this->_options['cache_dir'] = $cacheDir;
         $this->_options['cache_method'] = 'serialize';
         $this->_options['sourceMapBasepath'] = DEFAULT_PUBDIR;
         $this->_styleConfig = $styleConfig;

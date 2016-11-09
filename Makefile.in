@@ -6,7 +6,7 @@ RELEASE=@RELEASE@
 
 webinst:
 	mkdir -p tmp
-	tar -C src -zcf tmp/content.tar.gz .
+	tar -C src -zcf tmp/content.tar.gz --exclude-vcs .
 	cp info.xml tmp/info.xml
 	cp LICENSE tmp/
 	tar -C tmp -zcf ${PACKAGE}-${VERSION}-${RELEASE}.webinst info.xml content.tar.gz LICENSE
